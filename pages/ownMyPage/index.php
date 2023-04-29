@@ -13,6 +13,8 @@
     $user = $_SESSION["name"];
   }
 
+  $today = date('Y-m-d');
+  $tomorrow = date('Y-m-d', strtotime('tomorrow'));
   $res = array();
   $id_num = $_SESSION["account_id"];
   if(isset($id_num)){
@@ -28,7 +30,6 @@
     $statement->execute();
     $sqlResult = $statement->fetchAll(PDO::FETCH_ASSOC);
     // ※[PDO::FETCH_ASSOC]は、配列内にナンバーインデックスを入れない（カラムデータのみを入れる）為に設定する
-
     $calendarTableArray = makeCltArray($sqlResult);
     $output_calendar = makeDateCollectedClt($calendarTableArray);
     $res = json_encode($output_calendar);
@@ -42,7 +43,7 @@
       $undone_style = $inner['is_done']==1 ? "" : "style='display:none;'";
       $clearIcon = $inner['is_done']==1 ? '<span class="badge_clear">済</span>' : '';
       
-      echo '<div class="tasks">'.
+      return '<div class="tasks">'.
               '<p id="'.$inner['id'].'" class="task_title" data-from="'.$inner['char_id'].'">'.
                 '<span class="task_name">◆ </span>'.$clearIcon.
                 '<span class="task_name">'.$inner['task'].$round.'</span>'.
@@ -76,21 +77,18 @@
       .mr-05 { margin-right: 0.5em; }
       .mr-1 { margin-right: 1em; }
       .mr-2 { margin-right: 2em; }
-
       #title {
         color: #ff9200;
         font-size: 25px;
         font-weight: 600;
         -webkit-text-stroke: 0.7px white;
       }
-
       #for_today_task, .task_date {
         margin: 10px 0 10px 0;
         padding: 7px 10px;
         font-size: 17px;
         color: #EEEEEE;
       }
-
       #for_today_task {
         border-top: 1px solid #985522;
         border-right: 1px solid #985522;
@@ -98,7 +96,16 @@
         border-bottom: 1px solid #985522;
         background-color: #985522;
       }
-
+      #not_yet_task {
+        margin-bottom: 0.5em;
+        padding-left: 0.5em;
+        border-top: 1px solid #ffbf00;
+        border-right: 1px solid #ffbf00;
+        border-left: 10px solid #ffbf00;
+        border-bottom: 1px solid #ffbf00;
+        background-color: #fe0055;
+        color: white;
+      }
       .headerIcon>.material-icons,
       .editIcon>.material-icons {
         color:#f7f7cc;
@@ -107,14 +114,12 @@
         border:2px solid #f7f7cc;
         border-radius:5px;
       }
-
       .headerLogo {
         border-radius: 10px;
         border: solid orange 3px;
         height: 150px;
         box-shadow: 0px 1px 5px orange;
       }
-
       .headerIcon>.material-icons:hover,
       .editIcon>.material-icons:hover {
         color:yellow;
@@ -122,12 +127,10 @@
         box-shadow: 0 0 10px #fdff80;
         text-shadow: 0 0 10px #fdff80;
       }
-
       .editIcon>.material-icons { 
         font-size: 15px;
         margin: 3px;
       }
-
       .task_date {
         border-top: 1px solid #009688;
         border-right: 1px solid #009688;
@@ -135,14 +138,12 @@
         border-bottom: 1px solid #009688;
         background-color: #009688;
       }
-
       .tasks {
         text-align: left;
         color: brown;
         padding-left: 1.5em;
         padding-bottom: 0.5em;
       }
-
       .badge_other {
         border-radius: 50%;
         cursor: context-menu;
@@ -150,7 +151,6 @@
         margin-left: 1em;
         padding: 5px 10px;
       }
-
       .badge_clear {
         border-radius: 50%;
         cursor: context-menu;
@@ -160,17 +160,14 @@
         color: yellow;
         font-weight: 600;
       }
-
       .badge_other {
         border: 1px solid #e3297d;
         background-color: #e3297d;
       }
-
       .badge_clear {
         border: 1px solid #d61e1e;
         background-color: #ff7920;
       }
-
       .done_btn, .undone_btn, .open_btn {
         border-radius: 10px;
         cursor: pointer;
@@ -179,7 +176,6 @@
         padding: 2px 10px;
         color: #EEEEEE;
       }
-      
       .done_btn {
         border: 2px solid green;
         background-color: #25af2b;
@@ -192,40 +188,30 @@
         border: 2px solid blue;
         background-color: #2196f3;
       }
-
       .fader{
         animation-name:fadeInAnime;
         animation-duration:1s;
       }
-
       .spacer { width: 1em; }
-
       .changeFlexer { display: flex; }
 
       @keyframes fadeInAnime{
         from {opacity: 0}
         to {opacity: 1;}
       }
-
       #wrapper{
         margin:0 auto;
         position:relative;
       }
-
-      .dialog > div > .v-application--wrap {
-        display: none;
-      }
-
+      .dialog > div > .v-application--wrap { display: none; }
       .v-application--wrap {
         min-height: 0vh;
         background-color: rgb(239, 235, 222);
       }
-
       .v-list-item {
         min-height: 0vh;
         height: 27px;
       }
-
       .invisible { opacity: 0; }
       .disp_none { display: none; }
 
@@ -235,12 +221,10 @@
           width:80%;
           padding:0;
         }
-
         #wrapper {
           padding-top:20px;
           padding-bottom:20px;
         }
-
         .tasks > p > .task_name {
           -webkit-text-stroke: 0.6px white;
           font-weight: 700;
@@ -251,22 +235,17 @@
       /* スマホ用 */
       @media only screen and (max-width:400px){
         #wrapper { margin: 0.5em; }
-        
         .headerLogo { width: 90%; }
-        
         .tasks, .no_task {
           color: #a5900a;
           font-weight: 600;
           font-size: 15px;
         }
-
         .done_btn, .undone_btn {
           display: inline-block;
           margin-top: 10px;
         }
-
         .changeFlexer { display: inline-block; }
-
         .flexTopMargin { margin-top: 0.5em; }
       }
     </style>
@@ -278,31 +257,43 @@
     </style>
 </head>
 <body>
+  <?php echo "<input type='hidden' id='op_calendar' value='".$res."'>"; ?>
   <!-- Vue Area -->
   <div id="vueArea">
     <div align="center">
-      <br />
-      <img src="../../images/Stu-Do-Schedular_headerLogo.png" alt="Stu-Do-Schedular HeaderLogo" class="headerLogo">
+      <br /><img src="../../images/Stu-Do-Schedular_headerLogo.png" alt="Stu-Do-Schedular HeaderLogo" class="headerLogo">
     </div>
     <h2 align="center" id="title" class="fader"><?php echo $user."'s ".$contents_name ?></h2>
-
-      <!-- 共通クロックエリア -->
-      <div id="clockArea" class="fader"><digi-clock /></div>
+    <!-- 共通クロックエリア -->
+    <div id="clockArea" class="fader"><digi-clock /></div>
 
     <section id="wrapper" class="invisible">
-
       <div :style="styles.mg1ems" align="right">
         <div class="headerIcon">
           <i class="material-icons fader" title="ログアウトします" @click="dialog.instance.logout = true">logout</i>
         </div>
       </div>
-
       <main id="schedule_area">
         <input type="hidden" name="owner_id" id="owner_id" value="<?php echo $id_num ?>">
+
+        <!-- 未着手のタスク -->
+        <h3 id="not_yet_task" v-if="delayTasks.length!=0">Running Late Tasks</h3>
+        <!-- 一括削除ボタン -->
         <?php 
-          $today = date('Y-m-d');
-          $tomorrow = date('Y-m-d', strtotime('tomorrow'));
+          $countTaskSql = "SELECT count(char_id) length FROM `stu_do_schedules` WHERE first_date < (NOW() - INTERVAL 50 DAY)";
+          $countQueryDo = $connection->prepare($countTaskSql);
+          $countQueryDo->execute();
+          $count_result = $countQueryDo->fetch(PDO::FETCH_ASSOC);
+          $past50_length = $count_result['length'];
+          if($past50_length>0){
         ?>
+          <section align="center" v-if="delayTasks.length!=0">
+            <v-btn :style="palette.redFront" @click="deletePassedMore50($event)">50日以上前のタスクを削除</v-btn>
+          </section><br />
+        <?php } ?>
+        <div class="tasks" v-if="delayTasks.length!=0" v-for="item in this.delayTasks">
+          <p><span class="task_name">◆ {{ item.task }}</span><span> （{{ item.date }} 実施分）</span></p>
+        </div>
 
         <!-- 本日のタスク -->
         <h3 id="for_today_task">Today's Tasks</h3>
@@ -311,12 +302,9 @@
           foreach($output_calendar as $h => $record){ 
             if($record['date'] == $today){ 
               $today_count = 1;
-        ?>
-            <div id="today_task"><?php generateTask($record); ?></div>
-            <div><br /></div>
-            <? break; ?>
-          <? } ?>
-        <?
+              echo '<div id="today_task">'.generateTask($record).'</div><br /><br />';
+              break;
+            }
           }
           if($today_count != 1) echo "<div class='no_task' align='center'><p>本日はタスクはありません</p></div>";
         ?>
@@ -340,12 +328,12 @@
             <?php } ?>
           </h3>
           <div id="<?php echo "task_group_".($i+1) ?>" data-count="<?php echo ($i+1) ?>" <?php if(($i+1)>=3) echo "class='disp_none'" ?>>
-            <?php generateTask($record); ?>
+            <?php echo generateTask($record); ?>
           </div>
         <?php } ?>
         <?php } ?>
+        <br /><br />
 
-        <div><br /></div>
         <div id="insertUpdate" :class="viewCardSection == true ? 'fader' : 'none'" v-if="viewCardSection == true">
           <card-sec>
             <template #title><tag-title>スケジュール登録・更新</tag-title></template>
@@ -353,10 +341,12 @@
               <section align="right">
                 <v-btn class="mx-2" fab small @click="closeViewCardSection">×</v-btn>
               </section>
+
               <section>
                 <v-text-field id="taskId" class="disp_none" v-model="form.id" ></v-text-field>
                 <v-text-field id="taskTitle" label="タスクタイトル" placeholder="タスクのタイトルを入力して下さい" v-model="form.title"></v-text-field>
               </section>
+
               <section class="changeFlexer">
                 <div id="dateFirst" class="mr-2">
                   <v-text-field label="学習開始日" type="date" v-model="form.date1st" @input="changeDate1st($event)" />
@@ -373,6 +363,7 @@
                   <v-text-field label="2回目の日付" type="date" v-model="form.date2nd" disabled />
                 </div>
               </section>
+
               <section class="changeFlexer">
                 <div id="dateNumThird" class="mr-2">
                   <label class="mr-05">3回目{{ type!='insert' ? ' （最新：'+ last.third + '）' : '' }}</label>
@@ -401,8 +392,8 @@
                     <v-select hide-details :items="dayItems.fifth" id="select_5" v-model="form.num5th" @change="changeSelectNum('5th', $event)"></v-select>
                   </v-app>
                 </div>
-              </section>
-              <div><br /></div>
+              </section><br /><br />
+
               <section class="changeFlexer">
                 <div id="dateThird" class="mr-2">
                   <v-text-field label="3回目の日付" type="date" v-model="form.date3rd" disabled />
@@ -413,8 +404,8 @@
                 <div id="dateFifth" class="mr-2">
                   <v-text-field label="5回目の日付" type="date" v-model="form.date5th" disabled />
                 </div>
-              </section>
-              <div><br /></div>
+              </section><br /><br />
+
               <section align="center">
                 <v-btn v-if="type=='insert'" :style="palette.brownFront" @click="validationJudge">これで登録する</v-btn>
                 <v-btn v-else :style="palette.brownFront" @click="validationJudge">これで更新する</v-btn>
@@ -450,15 +441,16 @@
 
         <!-- 削除確認ダイアログ -->
         <dialog-frame-normal 
-          :target="dialog.instance.axiosDeleteConfirm" title="削除確認" 
+          :target="dialog.instance.axiosDeleteConfirm" :title="(deleteType==1) ? '削除確認' : '一括削除確認'" 
           :contents="dialog.phrase.deleteConfirm">
-          <v-btn @click="doDelete" :style="palette.brownFront">いいから消せ</v-btn>
+          <v-btn @click="doDelete" v-if="deleteType==1" :style="palette.brownFront">いいから消せ</v-btn>
+          <v-btn @click="doDeletePassedMore50" v-else :style="palette.brownFront">いいからみんな消せ</v-btn>
           <v-btn @click="dialog.instance.axiosDeleteConfirm = false" :style="palette.brownBack">やっぱやめとく</v-btn>
         </dialog-frame-normal>
 
         <!-- 削除完了ダイアログ -->
         <dialog-frame-normal 
-          :target="dialog.instance.axiosDeleteComplete" title="削除完了" 
+          :target="dialog.instance.axiosDeleteComplete" :title="(deleteType==1) ? '削除完了' : '一括削除完了'" 
           :contents="dialog.phrase.deleteComplete">
           <v-btn @click="doReload" :style="palette.brownFront">リロード</v-btn>
         </dialog-frame-normal>
@@ -506,6 +498,7 @@
             },
             type: "insert",
             viewCardSection: false,
+            delayTasks: [],
             form: {
               id: "",
               title: "",
@@ -520,6 +513,7 @@
               date5th: "",
               owner_id: "",
             },
+            deleteType: 1,
             dayItems: {
               second: [1,2],
               third: [5,6,7],
@@ -573,6 +567,8 @@
               document.getElementById('wrapper').classList.remove('invisible');
               document.getElementById('wrapper').classList.add('fader');
             }, 1500);
+            let task_lines = this.getTaskLines();
+            this.delayTasks = this.getDelayTaskLines(task_lines);
           },
           startInsertMode(){
             this.type = 'insert';
@@ -617,6 +613,31 @@
             if(type=='4th') this.dayDefo.forth = e;
             if(type=='5th') this.dayDefo.fifth = e;
             this.setRenew_date();
+          },
+          isDateBeforeToday(date_str){
+            const today = new Date();
+            let this_date = new Date(date_str);
+            return this_date < today;
+          },
+          getTaskLines(){
+            const op_cal_val = document.getElementById("op_calendar").value;
+            const op_cal_obj = JSON.parse(op_cal_val);
+            let task_lines = [];
+            op_cal_obj.forEach(line => {
+              line.tasks.forEach(task => {
+                task_lines.push(task);
+              });
+            });
+            return task_lines;
+          },
+          getDelayTaskLines(task_lines){
+            let delay_task_array = [];
+            task_lines.forEach(line =>{
+              if(this.isDateBeforeToday(line.date)){
+                if(line.is_done=='0') delay_task_array.push(line);
+              };
+            });
+            return delay_task_array;
           },
           setRenew_date(){
             this.form.num2nd = this.dayDefo.second;
@@ -673,6 +694,12 @@
           },
           deleteThis(e) {
             this.form.id = e.target.dataset.charid;
+            this.deleteType = 1;
+            this.dialog.instance.axiosDeleteConfirm = true;
+          },
+          deletePassedMore50(e) {
+            this.form.id = "";
+            this.deleteType = 2;
             this.dialog.instance.axiosDeleteConfirm = true;
           },
           disp_open(e) {
@@ -696,7 +723,6 @@
               forth: this.form.num4th,
               fifth: this.form.num5th,
             };
-
             // axiosでPHPのAPIにパラメータを送信する為、次のようにする
             let params = new URLSearchParams();
             Object.keys(data).forEach(function (key) {
@@ -730,6 +756,30 @@
                 if(response.data){
                   this.dialog.instance.axiosDeleteConfirm = false;
                   this.dialog.instance.axiosDeleteComplete = true;
+                };
+              }).catch(error => alert("通信に失敗しました。"));
+          },
+          doDeletePassedMore50() {
+            this.type = "bulk_delete";
+            let data = { 
+              allow: true,
+              type: this.type,
+            };
+            // axiosでPHPのAPIにパラメータを送信する為、次のようにする
+            let params = new URLSearchParams();
+            Object.keys(data).forEach(function (key) {
+              params.append(key, this[key]);
+            }, data);
+            // ajax通信実行
+            axios
+              .post('../../server/api/deleteMore50daysTasks.php', params, this.headerObject)
+              .then(response => {
+                if(response.data.status=="success"){
+                  this.dialog.instance.axiosDeleteConfirm = false;
+                  this.dialog.instance.axiosDeleteComplete = true;
+                }else{
+                  alert("削除に失敗しました。");
+                  this.dialog.instance.axiosDeleteConfirm = false;
                 };
               }).catch(error => alert("通信に失敗しました。"));
           },
