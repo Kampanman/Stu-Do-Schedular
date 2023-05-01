@@ -36,6 +36,7 @@
   }
 
   function generateTask($record){
+    $outputElem = "";
     foreach($record['tasks'] as $inner){
       $times = substr($inner['id'], -1);
       $round = "（".$times."回目）";
@@ -43,22 +44,22 @@
       $undone_style = $inner['is_done']==1 ? "" : "style='display:none;'";
       $clearIcon = $inner['is_done']==1 ? '<span class="badge_clear">済</span>' : '';
       
-      return '<div class="tasks">'.
-              '<p id="'.$inner['id'].'" class="task_title" data-from="'.$inner['char_id'].'">'.
-                '<span class="task_name">◆ </span>'.$clearIcon.
-                '<span class="task_name">'.$inner['task'].$round.'</span>'.
-                '<span class="done_btn mr-1" '.$done_style.' data-id="'.$inner['id'].'" data-done="'.$inner['is_done'].'" @click="changeDone($event)">実施済にする</span>'.
-                '<span class="undone_btn mr-1" '.$undone_style.' data-id="'.$inner['id'].'" data-done="'.$inner['is_done'].'" @click="changeDone($event)">未実施にする</span>'.
-                '<span class="editIcon">'.
-                  '<i class="material-icons fader" data-ownerid="'.$inner['owner_id'].'" data-charid="'.$inner['char_id'].'" data-times="'.$times.'" '
-                    .'@click="open_edit($event)">edit</i>'.
-                '</span>'.
-                '<span class="editIcon">'.
-                  '<i class="material-icons fader" data-charid="'.$inner['char_id'].'" @click="deleteThis($event)">delete</i>'.
-                '</span>'.
-              '</p>'.
-            '</div>';
+      $outputElem .= '<div class="tasks">'.
+                        '<p id="'.$inner['id'].'" class="task_title" data-from="'.$inner['char_id'].'">'.
+                          '<span class="task_name">◆ </span>'.$clearIcon.
+                          '<span class="task_name">'.$inner['task'].$round.'</span>'.
+                          '<span class="done_btn mr-1" '.$done_style.' data-id="'.$inner['id'].'" data-done="'.$inner['is_done'].'" @click="changeDone($event)">実施済にする</span>'.
+                          '<span class="undone_btn mr-1" '.$undone_style.' data-id="'.$inner['id'].'" data-done="'.$inner['is_done'].'" @click="changeDone($event)">未実施にする</span>'.
+                          '<span class="editIcon">'.
+                            '<i class="material-icons fader" data-ownerid="'.$inner['owner_id'].'" data-charid="'.$inner['char_id'].'" data-times="'.$times.'" @click="open_edit($event)">edit</i>'.
+                          '</span>'.
+                          '<span class="editIcon">'.
+                            '<i class="material-icons fader" data-charid="'.$inner['char_id'].'" @click="deleteThis($event)">delete</i>'.
+                          '</span>'.
+                        '</p>'.
+                      '</div>';
     }
+    return $outputElem;
   }
 ?>
 <!DOCTYPE html>
@@ -275,7 +276,6 @@
       </div>
       <main id="schedule_area">
         <input type="hidden" name="owner_id" id="owner_id" value="<?php echo $id_num ?>">
-
         <!-- 未着手のタスク -->
         <h3 id="not_yet_task" v-if="delayTasks.length!=0">Running Late Tasks</h3>
         <!-- 一括削除ボタン -->
